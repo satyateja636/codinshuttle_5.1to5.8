@@ -10,7 +10,7 @@ import com.codingshuttle.SecurityApp.SecurityApplication.repositories.UserReposi
 
 import lombok.RequiredArgsConstructor;
 
-@Service
+//@Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService{
 
@@ -20,7 +20,6 @@ public class UserService implements UserDetailsService{
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
 		return userRepository.findByEmail(username).orElseThrow(() -> new ResourceNotFoundException("user with email "+username+" not found"));
-		
 	}
 
 }
