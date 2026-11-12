@@ -24,23 +24,23 @@ public class WebSecurityConfig {
 
 		httpSecurity
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/posts", "/error", "/public/**").permitAll()
+						.requestMatchers("/posts", "/error", "/public/**", "/auth/**").permitAll()
 						.requestMatchers("/posts/**").hasAnyRole("ADMIN")
 						.anyRequest().authenticated())
 				.csrf(csrfConfig -> csrfConfig.disable())  //by default csrf will enabled, if we want to disable it we do like this
-				.sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //by default it is using session, if we don't want to use session we will do like this 
-				.formLogin(Customizer.withDefaults());
+				.sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); //by default it is using session, if we don't want to use session we will do like this 
+//				.formLogin(Customizer.withDefaults());
 
 		return httpSecurity.build();
 	}
 	
-	@Bean
-	UserDetailsService myInMemoryUserDetailsService() {
-		UserDetails normalUser = User.withUsername("satya").password(passwordEncoder().encode("Satya123")).roles("USER").build();
-		UserDetails adminUser = User.withUsername("admin").password(passwordEncoder().encode("admin")).roles("ADMIN").build();
-		
-		return new InMemoryUserDetailsManager(normalUser, adminUser);
-	}
+//	@Bean
+//	UserDetailsService myInMemoryUserDetailsService() {
+//		UserDetails normalUser = User.withUsername("satya").password(passwordEncoder().encode("Satya123")).roles("USER").build();
+//		UserDetails adminUser = User.withUsername("admin").password(passwordEncoder().encode("admin")).roles("ADMIN").build();
+//		
+//		return new InMemoryUserDetailsManager(normalUser, adminUser);
+//	}
 	
 	@Bean
 	PasswordEncoder passwordEncoder() {

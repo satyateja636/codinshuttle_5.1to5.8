@@ -31,6 +31,7 @@ public class User implements UserDetails{
 	@Column(unique = true)
 	private String email;
 	private String password;
+	private String name;
 	
 	//authorities are nothing but the role in the context of spring security
 	@Override

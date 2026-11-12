@@ -18,7 +18,7 @@ class SecurityApplicationTests {
 	@Test
 	void contextLoads() {
 		
-		User user = new User(4L, "satya@gmail.com", "1234");
+		User user = new User(4L, "satya@gmail.com", "1234", "Satya");
 		
 		String token = jwtService.generateToken(user);
 		//to verify this token we can use jwt.io by pasting this token there in that website
