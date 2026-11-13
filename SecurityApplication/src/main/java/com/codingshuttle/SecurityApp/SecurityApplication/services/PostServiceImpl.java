@@ -4,15 +4,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.codingshuttle.SecurityApp.SecurityApplication.dto.PostDTO;
 import com.codingshuttle.SecurityApp.SecurityApplication.entities.PostEntity;
+import com.codingshuttle.SecurityApp.SecurityApplication.entities.User;
 import com.codingshuttle.SecurityApp.SecurityApplication.exceptions.ResourceNotFoundException;
 import com.codingshuttle.SecurityApp.SecurityApplication.repositories.PostRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
@@ -41,6 +45,8 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public PostDTO updatePost(PostDTO inputPost, Long postId) {
+		User user =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		log.info("user {}", user);
 		PostEntity olderPost = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found with this id " + postId));
 		inputPost.setId(postId);
 		modelMapper.map(inputPost, olderPost);
