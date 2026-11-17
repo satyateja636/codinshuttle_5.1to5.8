@@ -1,0 +1,171 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security App - Home</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        button {
+            padding: 12px 20px;
+            margin: 10px 5px 10px 0;
+            border: none;
+            border-radius: 5px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .token {
+            background: #f1f1f1;
+            padding: 12px;
+            word-break: break-all;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        #response {
+            margin-top: 15px;
+            padding: 12px;
+            background: #e9f7ef;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Welcome to Security App!</h1>
+
+    <p id="status">Checking authentication...</p>
+
+    <h3>Access Token</h3>
+    <div class="token" id="token">No token found</div>
+
+    <button onclick="callSecuredApi()">
+        Call Secured API
+    </button>
+
+    <button onclick="refreshToken()">
+        Refresh Token
+    </button>
+
+    <div id="response"></div>
+
+</div>
+
+<script>
+
+    // Extract JWT from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+
+    if (token) {
+        sessionStorage.setItem("accessToken", token);
+
+        // Remove token from browser URL
+        window.history.replaceState({}, document.title, "/home.html");
+
+        document.getElementById("status").innerText =
+            "Authentication successful!";
+
+        document.getElementById("token").innerText = token;
+
+    } else {
+        document.getElementById("status").innerText =
+            "No token received. Please login first.";
+
+        const storedToken = sessionStorage.getItem("accessToken");
+
+        if (storedToken) {
+            document.getElementById("token").innerText = storedToken;
+        }
+    }
+
+    // Call secured API
+    async function callSecuredApi() {
+
+        const accessToken = sessionStorage.getItem("accessToken");
+
+        try {
+            const response = await fetch("/posts", {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + accessToken
+                }
+            });
+
+            const result = await response.text();
+
+            document.getElementById("response").innerText =
+                "Status: " + response.status + "\n" + result;
+
+        } catch (error) {
+            document.getElementById("response").innerText =
+                "Error: " + error.message;
+        }
+    }
+
+    // Refresh access token using HttpOnly cookie
+    async function refreshToken() {
+
+        try {
+            const response = await fetch("/auth/refreshToken", {
+                method: "POST",
+                credentials: "same-origin"
+            });
+
+            if (!response.ok) {
+                throw new Error("Refresh token failed");
+            }
+
+            const result = await response.json();
+
+            sessionStorage.setItem("accessToken", result.accessToken);
+
+            document.getElementById("token").innerText =
+                result.accessToken;
+
+            document.getElementById("status").innerText =
+                "Access token refreshed successfully!";
+
+        } catch (error) {
+            document.getElementById("response").innerText =
+                "Error: " + error.message;
+        }
+    }
+
+</script>
+
+</body>
+</html>
+```

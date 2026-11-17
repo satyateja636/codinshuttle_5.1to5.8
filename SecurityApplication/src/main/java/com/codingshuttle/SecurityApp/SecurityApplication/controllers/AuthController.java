@@ -31,7 +31,7 @@ public class AuthController {
 	private final UserService userService;
 	private final AuthService authService;
 	
-	@Value("${display.env}")
+	@Value("${deploy.env}")
 	private String deployEnv;
 
 	@PostMapping("/signup")

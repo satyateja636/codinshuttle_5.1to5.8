@@ -7,12 +7,11 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.codingshuttle.SecurityApp.SecurityApplication.filters.JwtAuthFilter;
+import com.codingshuttle.SecurityApp.SecurityApplication.handlers.OAuth2SuccessHandler;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,18 +22,20 @@ import lombok.RequiredArgsConstructor;
 public class WebSecurityConfig {
 
 	private final JwtAuthFilter jwtAuthFilter;
+	private final OAuth2SuccessHandler oAuth2SuccessHandler;
 	
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
 		httpSecurity
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/posts", "/error", "/public/**", "/auth/**").permitAll()
+						.requestMatchers("/posts", "/error", "/public/**", "/auth/**", "/home.html").permitAll()
 //						.requestMatchers("/posts/**").hasAnyRole("ADMIN")
 						.anyRequest().authenticated())
 				.csrf(csrfConfig -> csrfConfig.disable())  //by default csrf will enabled, if we want to disable it we do like this
 				.sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); //by default it is using session, if we don't want to use session we will do like this 
+				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+				.oauth2Login(oauth2Config -> oauth2Config.failureUrl("/login?error=true").successHandler(oAuth2SuccessHandler));  
 //				.formLogin(Customizer.withDefaults());
 
 		return httpSecurity.build();
