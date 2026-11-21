@@ -2,6 +2,7 @@ package com.codingshuttle.SecurityApp.SecurityApplication.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,7 +31,8 @@ public class WebSecurityConfig {
 		httpSecurity
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/posts", "/error", "/public/**", "/auth/**", "/home.html").permitAll()
-//						.requestMatchers("/posts/**").hasAnyRole("ADMIN")
+						.requestMatchers(HttpMethod.GET, "/posts").permitAll()
+						.requestMatchers(HttpMethod.POST, "/posts/**").hasAnyRole("ADMIN")
 						.anyRequest().authenticated())
 				.csrf(csrfConfig -> csrfConfig.disable())  //by default csrf will enabled, if we want to disable it we do like this
 				.sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
