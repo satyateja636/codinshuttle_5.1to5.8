@@ -2,6 +2,8 @@ package com.codingshuttle.SecurityApp.SecurityApplication.controllers;
 
 import java.util.List;
 
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +30,8 @@ public class PostController {
 	}
 	
 	@GetMapping("/{postId:\\d+}")
+//	@PreAuthorize("hasRole('USER', 'ADMIN') OR hasAuthority('POST_VIEW')")
+	@PreAuthorize("@postSecurity.isOwnerOfPost(#postId)")
 	public PostDTO getPostById(@PathVariable Long postId) {
 		return postService.getPostById(postId);
 	}

@@ -56,15 +56,35 @@ public class User implements UserDetails{
 	private Set<Permission> permissions;
 	
 	//authorities are nothing but the role in the context of spring security
+//	@Override
+//	public Collection<? extends GrantedAuthority> getAuthorities() {
+//		Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+//		roles.forEach(role -> {
+//			Set<SimpleGrantedAuthority> permissions = PermissionMapping.getAuthoritiesForRole(role);
+//			authorities.addAll(permissions);
+//			authorities.add(new SimpleGrantedAuthority("ROLE_"+role.name()));
+//		});
+//		return authorities;
+//	}
+//	
+	
+	//above commented of getAuthorities is from coding shuttle but getting some errors, so asked for help to the chatgpt and provided me with the below code
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-		roles.forEach(role -> {
-			Set<SimpleGrantedAuthority> permissions = PermissionMapping.getAuthoritiesForRole(role);
-			authorities.addAll(permissions);
-			authorities.add(new SimpleGrantedAuthority("ROLE_"+role.name()));
-		});
-		return authorities;
+	    Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+	    // Add roles
+	    roles.forEach(role ->
+	        authorities.add(
+	            new SimpleGrantedAuthority("ROLE_" + role.name())
+	        )
+	    );
+	    // Add directly assigned permissions
+	    permissions.forEach(permission ->
+	        authorities.add(
+	            new SimpleGrantedAuthority(permission.name())
+	        )
+	    );
+	    return authorities;
 	}
 	
 	@Override

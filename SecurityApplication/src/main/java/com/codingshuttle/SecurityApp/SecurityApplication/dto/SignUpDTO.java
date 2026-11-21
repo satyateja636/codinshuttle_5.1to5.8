@@ -14,5 +14,5 @@ public class SignUpDTO {
 	private String password;
 	private String name;
 	private Set<Role> roles;
-	private Set<Permission> permssions;
+	private Set<Permission> permissions;
 }

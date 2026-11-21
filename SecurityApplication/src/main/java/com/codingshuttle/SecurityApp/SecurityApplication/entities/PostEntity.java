@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreRemove;
 import jakarta.persistence.PreUpdate;
@@ -30,6 +31,9 @@ public class PostEntity{
 	
 //	@NotAudited -this annotation is used when we don't the particular field to be audited, for example if we use this annotation for description it won't be keeping the track of the who modified this description field like thet it works
 	private String description;
+	
+	@ManyToOne
+	private User author;
 	
 	@PrePersist //this prepersist annotation is default method  JPA-Auditing but if we want the custom method we are doing like below, this is used for updatedBy and updatedAt
 	void beforeSave() {

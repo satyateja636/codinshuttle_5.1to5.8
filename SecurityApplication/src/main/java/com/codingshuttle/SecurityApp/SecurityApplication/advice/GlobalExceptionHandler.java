@@ -1,5 +1,7 @@
 package com.codingshuttle.SecurityApp.SecurityApplication.advice;
 
+import java.nio.file.AccessDeniedException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -29,5 +31,11 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ApiError> handleJwtException(JwtException ex){
 		ApiError apiError = new ApiError(ex.getLocalizedMessage(), HttpStatus.UNAUTHORIZED);
 		return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
+	}
+	
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ApiError> handleAccessDeniedException(AccessDeniedException ex){
+		ApiError apiError = new ApiError(ex.getLocalizedMessage(), HttpStatus.FORBIDDEN);
+		return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
 	}
 }
