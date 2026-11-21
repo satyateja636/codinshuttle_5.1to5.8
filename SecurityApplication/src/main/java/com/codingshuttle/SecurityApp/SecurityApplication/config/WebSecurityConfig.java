@@ -11,6 +11,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.codingshuttle.SecurityApp.SecurityApplication.entities.enums.Permission;
+import com.codingshuttle.SecurityApp.SecurityApplication.entities.enums.Role;
 import com.codingshuttle.SecurityApp.SecurityApplication.filters.JwtAuthFilter;
 import com.codingshuttle.SecurityApp.SecurityApplication.handlers.OAuth2SuccessHandler;
 
@@ -32,7 +34,11 @@ public class WebSecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/posts", "/error", "/public/**", "/auth/**", "/home.html").permitAll()
 						.requestMatchers(HttpMethod.GET, "/posts").permitAll()
-						.requestMatchers(HttpMethod.POST, "/posts/**").hasAnyRole("ADMIN")
+						.requestMatchers(HttpMethod.POST, "/posts/**").hasAnyRole(Role.ADMIN.name() , Role.CREATOR.name())
+						.requestMatchers(HttpMethod.POST, "/posts/**").hasAnyAuthority(Permission.POST_CREATE.name())
+						.requestMatchers(HttpMethod.GET, "/posts/**").hasAnyAuthority(Permission.POST_VIEW.name())
+						.requestMatchers(HttpMethod.PUT, "/posts/**").hasAuthority(Permission.POST_UPDATE.name())
+						.requestMatchers(HttpMethod.DELETE, "/posts/**").hasAuthority(Permission.POST_DELETE.name())
 						.anyRequest().authenticated())
 				.csrf(csrfConfig -> csrfConfig.disable())  //by default csrf will enabled, if we want to disable it we do like this
 				.sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

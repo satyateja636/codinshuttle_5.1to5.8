@@ -1,20 +1,24 @@
 package com.codingshuttle.SecurityApp.SecurityApplication.entities;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.codingshuttle.SecurityApp.SecurityApplication.entities.enums.Permission;
 import com.codingshuttle.SecurityApp.SecurityApplication.entities.enums.Role;
+import com.codingshuttle.SecurityApp.SecurityApplication.utils.PermissionMapping;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -44,12 +48,23 @@ public class User implements UserDetails{
 	private String name;
 	
 	@Enumerated(EnumType.STRING)
+	@ElementCollection(fetch = FetchType.EAGER)
 	private Set<Role>  roles;
+	
+	@Enumerated(EnumType.STRING)
+	@ElementCollection(fetch = FetchType.EAGER)
+	private Set<Permission> permissions;
 	
 	//authorities are nothing but the role in the context of spring security
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return roles.stream().map(role -> new SimpleGrantedAuthority(role.name())).collect(Collectors.toSet());
+		Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+		roles.forEach(role -> {
+			Set<SimpleGrantedAuthority> permissions = PermissionMapping.getAuthoritiesForRole(role);
+			authorities.addAll(permissions);
+			authorities.add(new SimpleGrantedAuthority("ROLE_"+role.name()));
+		});
+		return authorities;
 	}
 	
 	@Override
